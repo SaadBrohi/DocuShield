@@ -1,7 +1,7 @@
 # src/ingestion/pptx_parser.py
 
 from pptx import Presentation
-from ingestion_utils import save_text
+from .ingestion_utils import save_text
 
 def parse_pptx(file_path: str, output_dir: str, document_id: str) -> str:
     """

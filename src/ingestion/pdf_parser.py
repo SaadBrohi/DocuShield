@@ -1,7 +1,7 @@
 # src/ingestion/pdf_parser.py
 
 import fitz  # PyMuPDF
-from ingestion_utils import save_text
+from .ingestion_utils import save_text
 
 def parse_pdf(file_path: str, output_dir: str, document_id: str) -> str:
     """
