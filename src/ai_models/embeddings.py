@@ -39,3 +39,36 @@ def process_all_files():
 
 if __name__ == "__main__":
     process_all_files()
+
+def save_embeddings_s3(bucket_name, doc_id, sentences, embeddings, region_name="us-east-1"):
+    """Save embeddings to S3 as a JSON file."""
+    try:
+        import boto3
+        s3 = boto3.client('s3', region_name=region_name)
+        
+        data = [{"sentence": s, "embedding": e.tolist()} for s, e in zip(sentences, embeddings)]
+        json_content = json.dumps(data)
+        
+        # Save to S3 under an 'embeddings/' prefix or similar
+        key = f"embeddings/{doc_id}.json"
+        s3.put_object(Bucket=bucket_name, Key=key, Body=json_content)
+        print(f"Saved embeddings to s3://{bucket_name}/{key}")
+    except ImportError:
+        print("boto3 not installed, cannot save to S3")
+    except Exception as e:
+        print(f"Error saving embeddings to S3: {e}")
+        raise
+
+def load_embeddings_s3(bucket_name, doc_id, region_name="us-east-1"):
+    """Load embeddings from S3."""
+    try:
+        import boto3
+        s3 = boto3.client('s3', region_name=region_name)
+        
+        key = f"embeddings/{doc_id}.json"
+        response = s3.get_object(Bucket=bucket_name, Key=key)
+        content = response['Body'].read().decode('utf-8')
+        return json.loads(content)
+    except Exception as e:
+        print(f"Error loading embeddings from S3: {e}")
+        return None
